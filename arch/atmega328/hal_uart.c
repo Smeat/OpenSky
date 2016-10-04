@@ -16,16 +16,24 @@
 */
 
 #include "hal_uart.h"
-void hal_uart_init(void) {
+#include <avr/io.h>
 
+#define USART_BAUDRATE 115200
+#define BAUD_PRESCALE (((F_CPU/(USART_BAUDRATE*16UL)))-1)
+
+void hal_uart_init(void) {
+    UCSR0B |= (1<<RXEN0)  | (1<<TXEN0);
+    UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
+    UBRR0H  = (BAUD_PRESCALE >> 8);
+    UBRR0L  = BAUD_PRESCALE;
 }
 
 void hal_uart_start_transmission(uint8_t ch) {
-
+    UDR0 = ch;
 }
 
 uint8_t hal_uart_int_enabled(void) {
-
+    return ( UCSR0A & ( 1 << UDRE0 ) ) == 0;
 }
 
 

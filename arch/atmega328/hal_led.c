@@ -16,8 +16,9 @@
 */
 
 #include "hal_led.h"
+#include <avr/io.h>
 
 void hal_led_init(uint16_t pin) {
-
+    DDRC = 0b11111111;
 }
 

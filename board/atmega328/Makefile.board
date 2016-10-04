@@ -13,7 +13,7 @@ RESULT ?= opensky_$(notdir $(TARGET))
 MAKEFLAGS+=" "
 
 #opt
-CFLAGS += -Os
+CFLAGS += -Os -g
 
 # include path
 CFLAGS += -I$(SELF_DIR)
@@ -38,8 +38,8 @@ vpath %.c $(ARCH_DIR)
 
 # Compilation Flags
 
-BOARD_FLAGS+= -mmcu=atmega328p
-LDFLAGS+= $(BOARD_FLAGS) -Wl,--gc-sections -Os -flto -fuse-linker-plugin
+BOARD_FLAGS+= -mmcu=atmega328p -DF_CPU=8000000L
+LDFLAGS+= $(BOARD_FLAGS) -Wl,--gc-sections -Os -g -flto -fuse-linker-plugin
 CFLAGS+= -std=gnu11 -flto -fno-fat-lto-objects $(BOARD_FLAGS)
 CFLAGS+= -I. -I$(ARCH_DIR)
 CFLAGS+= -DBUILD_TARGET=$(TARGET)
