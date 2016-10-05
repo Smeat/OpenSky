@@ -28,6 +28,7 @@ AR=$(TOOLROOT)/avr-gcc-ar
 AS=$(TOOLROOT)/avr-as
 OBJ=$(TOOLROOT)/avr-objcopy
 SIZE=$(TOOLROOT)/avr-size
+AVRDUDE=$(TOOLROOT)/avrdude
 
 # Code Paths
 ARCH_DIR=arch/atmega328
@@ -37,8 +38,10 @@ vpath %.c ./
 vpath %.c $(ARCH_DIR)
 
 # Compilation Flags
+BOARD_NAME?=atmega328p
+BOARD_FLAGS?= -mmcu=$(BOARD_NAME) -DF_CPU=8000000L
+SERIAL_PORT?=/dev/tty.usbserial-A50285BI
 
-BOARD_FLAGS+= -mmcu=atmega328p -DF_CPU=8000000L
 LDFLAGS+= $(BOARD_FLAGS) -Wl,--gc-sections -Os -g -flto -fuse-linker-plugin
 CFLAGS+= -std=gnu11 -flto -fno-fat-lto-objects $(BOARD_FLAGS)
 CFLAGS+= -I. -I$(ARCH_DIR)
@@ -62,11 +65,18 @@ $(RESULT).elf: $(LINK_OBJS)
 %.eep: %.elf
 	$(OBJ) -j .eeprom --set-section-flags=.eeprom='alloc,load' \
 	       --change-section-lma .eeprom=0 -O ihex $^ $@
-	$(SIZE) --mcu=atmega328p -C --format=avr $^
+	$(SIZE) --mcu=$(BOARD_NAME) -C --format=avr $^
 
 %.hex: %.elf
 	$(OBJ) -O ihex -R .eeprom $^ $@
-	$(SIZE) --mcu=atmega328p -C --format=avr $^
+	$(SIZE) --mcu=$(BOARD_NAME) -C --format=avr $^
+
+
+flash: $(RESULT).hex
+	$(AVRDUDE) -q -V -p $(BOARD_NAME) \
+		-C $(TOOLROOT)/../etc/avrdude.conf \
+		-D -c arduino -b 57600 -P $(SERIAL_PORT) \
+		-U flash:w:$^:i
 
 # pull in dependencies
 # this includes all .d files produced along when building .o.

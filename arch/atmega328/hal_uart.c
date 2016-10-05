@@ -17,23 +17,65 @@
 
 #include "hal_uart.h"
 #include <avr/io.h>
+#include <avr/interrupt.h>
 
 #define USART_BAUDRATE 115200
-#define BAUD_PRESCALE (((F_CPU/(USART_BAUDRATE*16UL)))-1)
+#define BAUD_PRESCALE (F_CPU / 4 / USART_BAUDRATE - 1) / 2
+
+// &UBRRH, &UBRRL, &UCSRA, &UCSRB, &UCSRC, &UDR
+// &UBRR0H, &UBRR0L, &UCSR0A, &UCSR0B, &UCSR0C, &UDR0
+
+volatile uint8_t hal_usart_txe_is_on;
+
+ISR(USART_UDRE_vect)
+{
+  hal_uart_interrupt();
+}
 
 void hal_uart_init(void) {
+    hal_usart_txe_is_on = 0;
+    UCSR0A = 1 << U2X0;
+    UBRR0H = BAUD_PRESCALE >> 8;
+    UBRR0L = BAUD_PRESCALE;
     UCSR0B |= (1<<RXEN0)  | (1<<TXEN0);
     UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
-    UBRR0H  = (BAUD_PRESCALE >> 8);
-    UBRR0L  = BAUD_PRESCALE;
+    UCSR0B |= (1<<RXCIE0);
+    UCSR0B &= ~(1<<UDRIE0);
 }
 
 void hal_uart_start_transmission(uint8_t ch) {
+
+    // Atmel practice seems to enable EIE and wait for it before sending first char, but here we block until its free.
+    while (( UCSR0A & ( 1 << UDRE0 ) ) == 0) {}
+    UDR0 = ch;
+
+    hal_usart_txe_is_on = 1;
+    // Set Data Register Empty Interrupt Enable, will trigger hal_uart_interrupt() when buffer is ready.
+    UCSR0B |= (1<<UDRIE0);
+}
+
+void hal_uart_isr_clear_flag(void) {
+    // Clear USART Transmit Complete
+    UCSR0A &= ~(1 << TXC0);
+}
+
+void hal_uart_tx_data(uint8_t ch) {
     UDR0 = ch;
 }
 
+uint8_t hal_uart_isr_is_set() {
+    // Check USART Transmit Complete
+    return UCSR0A & 1 << TXC0;
+}
+
+void hal_uart_isr_disable() {
+    // Clear Data Register Empty Interrupt Enable, will not trigger hal_uart_interrupt() anymore.
+    UCSR0B &= ~(1 << UDRIE0);
+    hal_usart_txe_is_on = 0;
+}
+
 uint8_t hal_uart_int_enabled(void) {
-    return ( UCSR0A & ( 1 << UDRE0 ) ) == 0;
+    return hal_usart_txe_is_on;
 }
 
 

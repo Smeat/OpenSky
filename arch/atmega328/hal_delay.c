@@ -16,7 +16,9 @@
 */
 
 #include "hal_delay.h"
+#include <util/delay.h>
 
 void hal_delay_us(uint32_t us) {
+  _delay_us(us);
 }
 
