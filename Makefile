@@ -1,5 +1,6 @@
 #select target. supported: {VD5M, D4RII}
-TARGET ?= USKY
+TARGET ?= ATMEGA328
+#TARGET ?= USKY
 #TARGET ?= VD5M
 #TARGET ?= D4RII
 
@@ -25,7 +26,11 @@ else
         ifeq ($(TARGET),RASP)
             include board/rasp/Makefile.board
         else
-            $(error UNSUPPORTED Target ($(TARGET)) given. aborting)
+					ifeq ($(TARGET),ATMEGA328)
+						include board/atmega328/Makefile.board
+					else
+						$(error UNSUPPORTED Target ($(TARGET)) given. aborting)
+					endif
         endif
     endif
   endif
