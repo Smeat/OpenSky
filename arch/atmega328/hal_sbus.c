@@ -14,4 +14,10 @@
 
    author: fishpepper <AT> gmail.com, jimmyw <AT> github
 */
+#include "hal_sbus.h"
+
+void hal_sbus_init(EXTERNAL_MEMORY uint8_t *data_ptr) {
+}
+void hal_sbus_start_transmission(uint8_t *buffer, uint8_t len) {
+}
 

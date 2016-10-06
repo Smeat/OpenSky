@@ -15,3 +15,6 @@
    author: fishpepper <AT> gmail.com, jimmyw <AT> github
 */
 
+void hal_soft_serial_init(void) {
+}
+
