@@ -20,20 +20,32 @@
 #include <avr/interrupt.h>
 
 
+
 #define DDR_SPI DDRB
-#define DD_MISO PB4
-#define DD_MOSI PB3
-#define DD_SCK PB5
-#define DD_SS PB2
+#define DD_SCK  DDB5
+#define DD_MOSI DDB3
+#define DD_MISO DDB4
+#define DD_SS DDB2
 
 ISR(SPI_STC_vect){
 }
 
+void hal_spi_csn_lo() {
+  PORTB &= ~ 1 << DDB2;
+}
+
+void hal_spi_csn_hi() {
+  PORTB |= 1 << DDB2;
+}
+
 void hal_spi_init(void) {
   /* Set MOSI and SCK output, all others input */
-  DDRB = (1<<DD_MOSI)|(1<<DD_SCK);
+  DDR_SPI = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS);
   /* Enable SPI, Master, set clock rate fck/16 */
   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
+  
+  /* PUT SS HI */
+  PORTB |= 1 << DDB2;
 }
 
 
@@ -41,8 +53,6 @@ void hal_spi_dma_xfer(uint8_t *buffer, uint8_t len) {
 }
 
 uint8_t hal_spi_tx(uint8_t address) {
-  /* Wait for transmission complete */
-  while(!(SPSR & (1<<SPIF))) {}
 
   /* Send byte */
   SPDR = address;
@@ -51,7 +61,9 @@ uint8_t hal_spi_tx(uint8_t address) {
   while(!(SPSR & (1<<SPIF))) {}
 
   /* Return byte */
-  return SPDR;
+  uint8_t r = SPDR;
+  //debug("hal_spi_tx sent: 0x"); debug_put_hex8(address); debug(" got: 0x"); debug_put_hex8(r); debug("\n"); debug_flush();
+  return r;
 }
 
 uint8_t hal_spi_rx(void) {

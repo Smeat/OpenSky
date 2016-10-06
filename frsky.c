@@ -68,6 +68,7 @@ void frsky_init(void){
     debug("frsky: init\n"); debug_flush();
 
     cc25xx_init();
+    debug("frsky: init\n"); debug_flush();
 
     frsky_link_quality = 0;
     frsky_diversity_count = 0;
@@ -110,12 +111,12 @@ void frsky_show_partinfo(void) {
     cc25xx_strobe(RFST_SIDLE);
 
     //check version:
-    debug("frsky: cc25xx partnum 0x");
     partnum = cc25xx_get_register_burst(PARTNUM);
-    debug_put_hex8(partnum);
-
-    debug(" version 0x");
     version = cc25xx_get_register_burst(VERSION);
+
+    debug("frsky: cc25xx partnum 0x");
+    debug_put_hex8(partnum);
+    debug(" version 0x");
     debug_put_hex8(version);
     debug_put_newline();
 
@@ -123,6 +124,7 @@ void frsky_show_partinfo(void) {
         debug("frsky: got valid part and version info\n");
     }else{
         debug("frsky: got INVALID part and version info?!\n");
+        while(1) {} 
     }
     debug_flush();
 }

@@ -48,9 +48,12 @@ inline void hal_cc25xx_set_register(uint8_t address, uint8_t data){
 
     //wait for ready signal
     //while(GPIO_ReadInputDataBit(CC25XX_SPI_GPIO, CC25XX_SPI_MISO_PIN) == 1){}
+    delay_ms(100);
 
     hal_spi_tx(address);
     hal_spi_tx(data);
+    debug("hal_cc25xx_set_register address: 0x"); debug_put_hex8(address);
+    debug(" data: 0x"); debug_put_hex8(data); debug("\n"); debug_flush();
 
     //deslect
     hal_spi_csn_hi();
@@ -64,13 +67,14 @@ inline uint8_t hal_cc25xx_get_register(uint8_t address){
 
     //wait for RDY signal:
     //while(GPIO_ReadInputDataBit(CC25XX_SPI_GPIO, CC25XX_SPI_MISO_PIN) == 1){}
+    delay_ms(100);
 
     //request address (read request has bit7 set)
     uint8_t status = hal_spi_tx(address | 0x80);
-    //debug_put_hex8(status);
 
     //fetch result:
     result = hal_spi_rx();
+    debug("hal_cc25xx_get_register: 0x"); debug_put_hex8(address); debug(" got: 0x"); debug_put_hex8(result); debug("\n"); debug_flush();
 
     //deselect device
     hal_spi_csn_hi();
@@ -81,8 +85,9 @@ inline uint8_t hal_cc25xx_get_register(uint8_t address){
 
 inline void hal_cc25xx_strobe(uint8_t address){
     hal_spi_csn_lo();
+    delay_ms(100);
     uint8_t status = hal_spi_tx(address);
-    //debug("s"); debug_put_hex8(status); debug_put_newline();
+    debug("strobe: 0x"); debug_put_hex8(status); debug_put_newline();
     hal_spi_csn_hi();
 }
 
