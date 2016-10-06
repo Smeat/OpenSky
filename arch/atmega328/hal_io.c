@@ -22,6 +22,6 @@ void hal_io_init(void) {
 }
 
 uint8_t hal_io_bind_request(void) {
-  return 0;
+  return 1;
 }
 

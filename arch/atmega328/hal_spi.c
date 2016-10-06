@@ -26,6 +26,7 @@
 #define DD_MOSI DDB3
 #define DD_MISO DDB4
 #define DD_SS DDB2
+#define DD_GDO DDB1
 
 ISR(SPI_STC_vect){
 }
@@ -36,6 +37,14 @@ void hal_spi_csn_lo() {
 
 void hal_spi_csn_hi() {
   PORTB |= 1 << DDB2;
+}
+
+void hal_spi_wait_ready() {
+  while(PORTB & 1 << DD_MISO){}
+}
+
+uint8_t hal_spi_get_gdo() {
+  return PORTB & 1 << DD_GDO;
 }
 
 void hal_spi_init(void) {
