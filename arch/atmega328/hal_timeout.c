@@ -17,30 +17,56 @@
 
 #include "hal_timeout.h"
 
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+/*
+ *  CS22     CS21    CS20    DESCRIPTION
+ *  0        0       0       Timer/Counter2 Disabled
+ *  0        0       1       No Prescaling
+ *  0        1       0       Clock / 8
+ *  0        1       1       Clock / 32
+ *  1        0       0       Clock / 64  <---  choosen
+ *  1        0       1       Clock / 128
+ *  1        1       0       Clock / 256
+ *  1        1       1       Clock / 1024
+ */
+
 void hal_timeout_init(void) {
+    TCCR2B = 1 << CS22; // Use 64ticks prescaler.
+    TCCR2A = 1 << WGM21; // Clear Timer on Compare.
+    OCR2A   = (F_CPU/64L/1000L)-1; // Divide clock speed, with 64ticks, and transform to us.
+    TIFR2 |= (1<<OCF2A); // Clear pending interrupts.
+    TIMSK2 |= (1 << OCIE2A); // Enable interrupt.
+}
+
+static uint32_t timer_1 = 0;
+static uint32_t timer_2 = 0;
+
+ISR(TIMER2_COMPA_vect){
+    if (timer_1 > 0)
+      timer_1--;
+    if (timer_2 > 0)
+      timer_2--;
 }
 
 void hal_timeout_set_100us(__IO uint32_t hus) {
+    timer_1 = hus * 100;
 }
 
 void hal_timeout2_set_100us(__IO uint32_t hus) {
+    timer_2 = hus * 100;
 }
 
 void hal_timeout_set(__IO uint32_t ms){
+    timer_1 = ms * 1000;
 }
 
 uint8_t hal_timeout_timed_out(void) {
+  return timer_1 == 0;
 }
 
 uint8_t hal_timeout2_timed_out(void) {
+  return timer_2 == 0;
 }
 
-void hal_timeout_delay_ms(uint32_t timeout){
-}
-
-void SysTick_Handler(void){
-}
-
-uint32_t hal_timeout_time_remaining(void) {
-    return 0;
-}
