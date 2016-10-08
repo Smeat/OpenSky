@@ -16,13 +16,16 @@
 */
 
 #include "hal_storage.h"
+#include "storage.h"
+#include <avr/eeprom.h>
 
-void hal_storage_init(void) {
-}
+uint8_t storage_memory[sizeof(STORAGE_DESC)] EEMEM;
 
 void hal_storage_write(uint8_t *buffer, uint16_t len) {
+    eeprom_write_block(buffer, storage_memory, len);
 }
 
 void hal_storage_read(uint8_t *storage_ptr, uint16_t len) {
+    eeprom_read_block(storage_ptr, storage_memory, len);
 }
 
