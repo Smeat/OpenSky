@@ -22,14 +22,8 @@
 #include "timeout.h"
 #include <string.h>
 
-static void hal_cc25xx_init_gpio(void);
-
 void hal_cc25xx_init(void){
     hal_spi_init();
-    hal_cc25xx_init_gpio();
-}
-
-static void hal_cc25xx_init_gpio(void) {
 }
 
 inline uint32_t hal_cc25xx_set_antenna(uint8_t id){
@@ -135,18 +129,30 @@ inline void hal_cc25xx_register_read_multi(uint8_t address, uint8_t *buffer, uin
     // wait for ready signal
     hal_spi_wait_ready();
 
-    //debug("read "); debug_put_uint8(len); debug_flush();
     // request address (read request)
     uint8_t status = hal_spi_tx(address);
 
     //fill buffer with read commands:
     memset(buffer, 0xFF, len);
+    uint8_t len2 = len;
+    uint8_t buffer2 = buffer;
 
     // TODO hal_spi_dma_xfer(buffer, len);
     while(len--){
         *buffer = hal_spi_rx();
         buffer++;
     }
+
+    debug("read data ");
+    debug_put_hex8(status);
+    debug(":");
+    while(len2--) {
+      debug(" 0x");
+      debug_put_hex8(*buffer);
+    }
+    debug("\n");
+    debug_flush();
+
 
     // deselect device
     hal_spi_csn_hi();
@@ -156,6 +162,7 @@ inline void hal_cc25xx_register_write_multi(uint8_t address, uint8_t *buffer, ui
     //s elect device:
     hal_spi_csn_lo();
 
+    debug("write "); debug_put_uint8(len); debug_flush();
     // wait for RDY signal:
     hal_spi_wait_ready();
 
@@ -163,7 +170,11 @@ inline void hal_cc25xx_register_write_multi(uint8_t address, uint8_t *buffer, ui
     hal_spi_tx(address | BURST_FLAG);
 
     // send array
-    hal_spi_dma_xfer(buffer, len);
+    // TODO hal_spi_dma_xfer(buffer, len);
+    while(len--){
+        hal_spi_tx(*buffer);
+        buffer++;
+    }
 
     //deselect device
     hal_spi_csn_hi();
@@ -171,6 +182,7 @@ inline void hal_cc25xx_register_write_multi(uint8_t address, uint8_t *buffer, ui
 
 inline void hal_cc25xx_process_packet(volatile uint8_t *packet_received, volatile uint8_t *buffer, uint8_t maxlen){
     if(hal_spi_get_gdo() == 1){
+        debug("GDO\n");
         //data received, fetch data
         //timeout_set_100us(5);
 

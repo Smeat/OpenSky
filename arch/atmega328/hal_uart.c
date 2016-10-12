@@ -30,6 +30,7 @@ volatile uint8_t hal_usart_txe_is_on;
 ISR(USART_UDRE_vect)
 {
   hal_uart_interrupt();
+  //reti();
 }
 
 void hal_uart_init(void) {
@@ -41,6 +42,7 @@ void hal_uart_init(void) {
     UCSR0C |= (1<<UCSZ00) | (1<<UCSZ01);
     UCSR0B |= (1<<RXCIE0);
     UCSR0B &= ~(1<<UDRIE0);
+    sei();
 }
 
 void hal_uart_start_transmission(uint8_t ch) {

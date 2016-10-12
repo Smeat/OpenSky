@@ -17,8 +17,13 @@
 
 #include "hal_timeout.h"
 
+#include "debug.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
+
+static uint32_t timer_1 = 0;
+static uint32_t timer_2 = 0;
+
 
 /*
  *  CS22     CS21    CS20    DESCRIPTION
@@ -26,43 +31,116 @@
  *  0        0       1       No Prescaling
  *  0        1       0       Clock / 8
  *  0        1       1       Clock / 32
- *  1        0       0       Clock / 64  <---  choosen
+ *  1        0       0       Clock / 64
  *  1        0       1       Clock / 128
  *  1        1       0       Clock / 256
  *  1        1       1       Clock / 1024
  */
 
 void hal_timeout_init(void) {
-    TCCR2B = 1 << CS22; // Use 64ticks prescaler.
-    TCCR2A = 1 << WGM21; // Clear Timer on Compare.
-    OCR2A   = (F_CPU/64L/1000L)-1; // Divide clock speed, with 64ticks, and transform to us.
-    TIFR2 |= (1<<OCF2A); // Clear pending interrupts.
-    TIMSK2 |= (1 << OCIE2A); // Enable interrupt.
+
+    //CTC mode
+    TCCR0A = (1<<WGM21);
+    TCCR0B  = (1 << CS22) | (0 << CS21) | (0 << CS20);
+
+    //set up overflow every 100us.
+    OCR0A   = 125;
+    hal_timeout_set(0);
+   
+    debug("timer test\n"); 
+    DDRB = (1<<0) | (1<<1);
+    sei();
+    while(1){
+        hal_timeout_set(1); // 1ms
+        PORTB &= ~ (1 << 0);
+        while(timer_1 > 0){
+        }
+        PORTB |= (1 << 0);
+        hal_timeout_set(10); // 10ms
+        PORTB &= ~ (1 << 0);
+        while(timer_1 > 0){
+        }
+        PORTB |= (1 << 0);
+    }
 }
 
-static uint32_t timer_1 = 0;
-static uint32_t timer_2 = 0;
+static volatile c = 0;
+ISR(TIMER0_COMPA_vect, ISR_NAKED){
+  if (c) {
+    PORTB &= ~ (1 << 1);
+    c = 0;
+  } else {
+    PORTB |= (1 << 1);
+    c = 1;
+  }
 
-ISR(TIMER2_COMPA_vect){
     if (timer_1 > 0)
       timer_1--;
     if (timer_2 > 0)
       timer_2--;
+
+    // Disable interrupt.
+    if (timer_1 == 0) {
+      TIMSK0 &= ~(1 << OCIE2A);
+    }
+
+    reti();
 }
 
-void hal_timeout_set_100us(__IO uint32_t hus) {
-    timer_1 = hus * 100;
+void hal_timeout_set(__IO uint32_t ms) {
+    //debug("timeout1 set "); debug_put_hex32(ms); debug_put_newline();
+    //disable OVF interrupts:
+    TIMSK0 &= ~(1 << OCIE2A);
+    
+    //clear counter
+    TCNT0 = 0;
+    
+    //clear pending ints
+    TIFR0 |= (1<<OCF2A);
+     
+    //prepare timeout val:
+    timer_1 = ms;
+    
+    if (timer_1 == 0){
+        return;
+    }
+     
+    //clear pending ints
+    TIFR0 |= (1<<OCF2A);
+    
+    //re enable interrupts
+    TIMSK0 |= (1 << OCIE2A);
 }
 
-void hal_timeout2_set_100us(__IO uint32_t hus) {
-    timer_2 = hus * 100;
-}
+void hal_timeout2_set(__IO uint32_t ms) {
+    debug("timeout2 set "); debug_put_uint8(ms); debug_put_newline();
 
-void hal_timeout_set(__IO uint32_t ms){
-    timer_1 = ms * 1000;
+    //disable OVF interrupts:
+    TIMSK2 &= ~(1 << OCIE2A);
+    
+    //clear counter
+    TCNT2 = 0;
+    
+    //clear pending ints
+    TIFR2 |= (1<<OCF2A);
+     
+    //prepare timeout val:
+    timer_2 = ms;
+    
+    if (timer_2 == 0){
+        return;
+    }
+     
+    //clear pending ints
+    TIFR2 |= (1<<OCF2A);
+    
+    //re enable interrupts
+    TIMSK2 |= (1 << OCIE2A);
 }
 
 uint8_t hal_timeout_timed_out(void) {
+  if (timer_1 == 0)
+    debug("Timer 1 timed out\n");
   return timer_1 == 0;
 }
 

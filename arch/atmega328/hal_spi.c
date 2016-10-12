@@ -40,21 +40,31 @@ void hal_spi_csn_hi() {
 }
 
 void hal_spi_wait_ready() {
-  while(PORTB & 1 << DD_MISO){}
+  while((PINB & 1 << DD_MISO) != 0){}
 }
 
 uint8_t hal_spi_get_gdo() {
-  return PORTB & 1 << DD_GDO;
+  return (PINB & 1 << DD_GDO) != 0;
 }
 
 void hal_spi_init(void) {
   /* Set MOSI and SCK output, all others input */
-  DDR_SPI = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS);
+  DDR_SPI = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
   /* Enable SPI, Master, set clock rate fck/16 */
   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
   
   /* PUT SS HI */
   PORTB |= 1 << DDB2;
+
+  /* Test GDO PIN
+  while(1) {
+    if (hal_spi_get_gdo())
+      debug("1\n");
+    else
+      debug("0\n");
+    delay_ms(100);
+  }
+  */
 }
 
 
