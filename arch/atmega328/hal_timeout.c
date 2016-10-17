@@ -141,8 +141,6 @@ void hal_timeout2_set(__IO uint32_t ms) {
 }
 
 uint8_t hal_timeout_timed_out(void) {
-  if (timer_1 == 0)
-    debug("Timer 1 timed out\n");
   return timer_1 == 0;
 }
 

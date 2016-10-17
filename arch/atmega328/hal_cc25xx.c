@@ -135,7 +135,7 @@ inline void hal_cc25xx_register_read_multi(uint8_t address, uint8_t *buffer, uin
     //fill buffer with read commands:
     memset(buffer, 0xFF, len);
     uint8_t len2 = len;
-    uint8_t buffer2 = buffer;
+    uint8_t *buffer2 = buffer;
 
     // TODO hal_spi_dma_xfer(buffer, len);
     while(len--){
@@ -143,16 +143,22 @@ inline void hal_cc25xx_register_read_multi(uint8_t address, uint8_t *buffer, uin
         buffer++;
     }
 
-    debug("read data ");
-    debug_put_hex8(status);
-    debug(":");
-    while(len2--) {
-      debug(" 0x");
-      debug_put_hex8(*buffer);
+#if DEBUG_PRINT_READ
+    if (len2 > 0) {
+      debug("read data len: ");
+      debug_put_uint8(len2);
+      debug(" status:");
+      debug_put_hex8(status);
+      debug(" :");
+      while(len2--) {
+        debug(" 0x");
+        debug_put_hex8(*buffer);
+        buffer2++;
+      }
+      debug("\n");
+      debug_flush();
     }
-    debug("\n");
-    debug_flush();
-
+#endif
 
     // deselect device
     hal_spi_csn_hi();
@@ -182,7 +188,6 @@ inline void hal_cc25xx_register_write_multi(uint8_t address, uint8_t *buffer, ui
 
 inline void hal_cc25xx_process_packet(volatile uint8_t *packet_received, volatile uint8_t *buffer, uint8_t maxlen){
     if(hal_spi_get_gdo() == 1){
-        debug("GDO\n");
         //data received, fetch data
         //timeout_set_100us(5);
 
