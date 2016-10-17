@@ -66,8 +66,9 @@ void hal_timeout_init(void) {
 #endif
 }
 
-static volatile c = 0;
-ISR(TIMER0_COMPA_vect, ISR_NAKED){
+ISR(TIMER0_COMPA_vect){
+#ifdef TEST
+  static volatile c = 0;
   if (c) {
     PORTB &= ~ (1 << 1);
     c = 0;
@@ -75,22 +76,42 @@ ISR(TIMER0_COMPA_vect, ISR_NAKED){
     PORTB |= (1 << 1);
     c = 1;
   }
-
+#endif
     if (timer_1 > 0)
       timer_1--;
+
+    // Disable interrupt.
+    if (timer_1 == 0) {
+      debug("timeout1\n");
+      TIMSK0 &= ~(1 << OCIE2A);
+    }
+
+}
+
+ISR(TIMER2_COMPA_vect){
+#ifdef TEST
+  static volatile c = 0;
+  if (c) {
+    PORTB &= ~ (1 << 1);
+    c = 0;
+  } else {
+    PORTB |= (1 << 1);
+    c = 1;
+  }
+#endif
     if (timer_2 > 0)
       timer_2--;
 
     // Disable interrupt.
     if (timer_1 == 0) {
+      debug("timeout1\n");
       TIMSK0 &= ~(1 << OCIE2A);
     }
-
-    reti();
 }
 
+
 void hal_timeout_set(__IO uint32_t ms) {
-    //debug("timeout1 set "); debug_put_hex32(ms); debug_put_newline();
+    debug("timeout1 set "); debug_put_hex32(ms); debug_put_newline();
     //disable OVF interrupts:
     TIMSK0 &= ~(1 << OCIE2A);
 
