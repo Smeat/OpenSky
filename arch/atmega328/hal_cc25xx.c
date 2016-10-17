@@ -45,10 +45,11 @@ inline void hal_cc25xx_set_register(uint8_t address, uint8_t data){
 
     hal_spi_tx(address);
     hal_spi_tx(data);
-    //debug("hal_cc25xx_set_register address: 0x"); debug_put_hex8(address); debug(" data: 0x"); debug_put_hex8(data); debug("\n"); debug_flush();
+    debug("hal_cc25xx_set_register address: 0x"); debug_put_hex8(address); debug(" data: 0x"); debug_put_hex8(data); debug("\n"); debug_flush();
 
     //deslect
     hal_spi_csn_hi();
+    hal_cc25xx_get_register(address);
 }
 
 inline uint8_t hal_cc25xx_get_register(uint8_t address){
@@ -65,7 +66,7 @@ inline uint8_t hal_cc25xx_get_register(uint8_t address){
 
     //fetch result:
     result = hal_spi_rx();
-    //debug("hal_cc25xx_get_register: 0x"); debug_put_hex8(address); debug(" got: 0x"); debug_put_hex8(result); debug("\n"); debug_flush();
+    debug("hal_cc25xx_get_register: 0x"); debug_put_hex8(address); debug(" got: 0x"); debug_put_hex8(result); debug("\n"); debug_flush();
 
     //deselect device
     hal_spi_csn_hi();
