@@ -41,13 +41,14 @@ void hal_timeout_init(void) {
 
     //CTC mode
     TCCR0A = (1<<WGM21);
-    TCCR0B  = (1 << CS22) | (0 << CS21) | (0 << CS20);
+    TCCR0B  = (0 << CS22) | (1 << CS21) | (1 << CS20); // Clock / 32
 
-    //set up overflow every 100us.
-    OCR0A   = 125;
+    //set up overflow every 1.0ms.
+    OCR0A   = F_CPU/32L/1000L/2L;
     hal_timeout_set(0);
-   
-    debug("timer test\n"); 
+
+#ifdef TEST
+    debug("timer test\n");
     DDRB = (1<<0) | (1<<1);
     sei();
     while(1){
@@ -62,6 +63,7 @@ void hal_timeout_init(void) {
         }
         PORTB |= (1 << 0);
     }
+#endif
 }
 
 static volatile c = 0;
@@ -91,23 +93,23 @@ void hal_timeout_set(__IO uint32_t ms) {
     //debug("timeout1 set "); debug_put_hex32(ms); debug_put_newline();
     //disable OVF interrupts:
     TIMSK0 &= ~(1 << OCIE2A);
-    
+
     //clear counter
     TCNT0 = 0;
-    
+
     //clear pending ints
     TIFR0 |= (1<<OCF2A);
-     
-    //prepare timeout val:
+
+    //prepare timeout val
     timer_1 = ms;
-    
+
     if (timer_1 == 0){
         return;
     }
-     
+
     //clear pending ints
     TIFR0 |= (1<<OCF2A);
-    
+
     //re enable interrupts
     TIMSK0 |= (1 << OCIE2A);
 }
@@ -117,23 +119,23 @@ void hal_timeout2_set(__IO uint32_t ms) {
 
     //disable OVF interrupts:
     TIMSK2 &= ~(1 << OCIE2A);
-    
+
     //clear counter
     TCNT2 = 0;
-    
+
     //clear pending ints
     TIFR2 |= (1<<OCF2A);
-     
+
     //prepare timeout val:
     timer_2 = ms;
-    
+
     if (timer_2 == 0){
         return;
     }
-     
+
     //clear pending ints
     TIFR2 |= (1<<OCF2A);
-    
+
     //re enable interrupts
     TIMSK2 |= (1 << OCIE2A);
 }
