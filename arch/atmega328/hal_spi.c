@@ -26,18 +26,6 @@ void hal_spi_init(void) {
   /* Enable SPI, Master, set clock rate fck/16 */
   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
   
-  /* PUT SS HI */
-  hal_spi_csn_hi();
-
-  /* Test GDO PIN
-  while(1) {
-    if (hal_spi_get_gdo())
-      debug("1\n");
-    else
-      debug("0\n");
-    delay_ms(100);
-  }
-  */
 }
 
 

@@ -28,25 +28,38 @@
 #define DD_GDO D9
 #define DD_SS D10
 
-void hal_spi_csn_lo() {
-  PORTB &= ~ 1 << DDB2;
-}
-
-void hal_spi_csn_hi() {
-  PORTB |= 1 << DDB2;
-}
-
-void hal_spi_wait_ready() {
-  while((PINB & 1 << DD_MISO) != 0){}
-}
-
-uint8_t hal_spi_get_gdo() {
-  return (PINB & 1 << DD_GDO) != 0;
-}
-
 void hal_io_init(void) {
   /* Set MOSI and SCK output, all others input */
   DDRB = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
+  
+  /* PUT SS HI */
+  hal_io_csn_hi();
+
+  /* Test GDO PIN
+  while(1) {
+    if (hal_io_get_gdo())
+      debug("1\n");
+    else
+      debug("0\n");
+    delay_ms(100);
+  }
+  */
+}
+
+void hal_io_csn_lo() {
+  PORTB &= ~ 1 << DDB2;
+}
+
+void hal_io_csn_hi() {
+  PORTB |= 1 << DDB2;
+}
+
+void hal_io_wait_miso_low() {
+  while((PINB & 1 << DD_MISO) != 0){}
+}
+
+uint8_t hal_io_get_gdo() {
+  return (PINB & 1 << DD_GDO) != 0;
 }
 
 uint8_t hal_io_bind_request(void) {
