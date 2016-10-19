@@ -19,42 +19,15 @@
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
-
-
-#define DDR_SPI DDRB
-#define DD_SCK  DDB5
-#define DD_MOSI DDB3
-#define DD_MISO DDB4
-#define DD_SS DDB2
-#define DD_GDO DDB1
-
 ISR(SPI_STC_vect){
 }
 
-void hal_spi_csn_lo() {
-  PORTB &= ~ 1 << DDB2;
-}
-
-void hal_spi_csn_hi() {
-  PORTB |= 1 << DDB2;
-}
-
-void hal_spi_wait_ready() {
-  while((PINB & 1 << DD_MISO) != 0){}
-}
-
-uint8_t hal_spi_get_gdo() {
-  return (PINB & 1 << DD_GDO) != 0;
-}
-
 void hal_spi_init(void) {
-  /* Set MOSI and SCK output, all others input */
-  DDR_SPI = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
   /* Enable SPI, Master, set clock rate fck/16 */
   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
   
   /* PUT SS HI */
-  PORTB |= 1 << DDB2;
+  hal_spi_csn_hi();
 
   /* Test GDO PIN
   while(1) {
