@@ -17,6 +17,7 @@
 
 #include "hal_cc25xx.h"
 #include "hal_spi.h"
+#include "hal_io.h"
 #include "cc25xx.h"
 #include "debug.h"
 #include "timeout.h"
@@ -49,7 +50,8 @@ inline void hal_cc25xx_set_register(uint8_t address, uint8_t data){
 
     //deslect
     hal_io_csn_hi();
-    hal_cc25xx_get_register(address);
+    // TO VERIFY
+    // if (hal_cc25xx_get_register(address) != data) while(1) do debug("FAIL");
 }
 
 inline uint8_t hal_cc25xx_get_register(uint8_t address){
@@ -78,7 +80,7 @@ inline uint8_t hal_cc25xx_get_register(uint8_t address){
 inline void hal_cc25xx_strobe(uint8_t address){
     hal_io_csn_lo();
     uint8_t status = hal_spi_tx(address);
-    // debug("strobe: 0x"); debug_put_hex8(status); debug_put_newline();
+    debug("strobe: 0x"); debug_put_hex8(address); debug(" status: 0x"); debug_put_hex8(status); debug_put_newline();
     hal_io_csn_hi();
 }
 
@@ -190,6 +192,7 @@ inline void hal_cc25xx_register_write_multi(uint8_t address, uint8_t *buffer, ui
 
 inline void hal_cc25xx_process_packet(volatile uint8_t *packet_received, volatile uint8_t *buffer, uint8_t maxlen){
     if(hal_io_get_gdo() == 1){
+        debug("GDO\n");
         //data received, fetch data
         //timeout_set_100us(5);
 
