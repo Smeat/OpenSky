@@ -18,6 +18,7 @@
 #include <stdint.h>
 #include "hal_io.h"
 #include "config.h"
+#include "delay.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
 
@@ -29,13 +30,15 @@
 #define DD_GDO D9
 #define DD_SS D10
 
+#define BIND D4
+#define DEBUG_PIN D5
 #define PA_EN D6
 #define LNA_EN D7
 
 void hal_io_init(void) {
   /* Set MOSI and SCK output, all others input */
   DDRB = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
-  DDRD = (1<<PA_EN)|(1<<LNA_EN);
+  DDRD = (1<<PA_EN)|(1<<LNA_EN)|(1<<DEBUG_PIN);
   
   /* PUT SS HI */
   hal_io_csn_hi();
@@ -65,6 +68,14 @@ void hal_io_enable_lna(uint8_t enable) {
     PORTD &= ~ 1 << LNA_EN;
 }
 
+void hal_io_debug(uint8_t enable) {
+  if (enable)
+    PORTD |= 1 << DEBUG_PIN;
+  else
+    PORTD &= ~ 1 << DEBUG_PIN;
+}
+
+
 void hal_io_csn_lo() {
   PORTB &= ~ 1 << DDB2;
 }
@@ -74,7 +85,8 @@ void hal_io_csn_hi() {
 }
 
 void hal_io_wait_miso_low() {
-  while((PINB & 1 << DD_MISO) != 0){}
+  while((PINB & 1 << DD_MISO) != 0){ /*debug("H");*/}
+  /*debug("L");*/
 }
 
 uint8_t hal_io_get_gdo() {
@@ -82,6 +94,6 @@ uint8_t hal_io_get_gdo() {
 }
 
 uint8_t hal_io_bind_request(void) {
-  return 1;
+  return (PIND & 1 << BIND) != 0;
 }
 

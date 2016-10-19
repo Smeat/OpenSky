@@ -46,12 +46,12 @@ void hal_uart_init(void) {
 }
 
 void hal_uart_start_transmission(uint8_t ch) {
+    hal_usart_txe_is_on = 1;
 
     // Atmel practice seems to enable EIE and wait for it before sending first char, but here we block until its free.
     while (( UCSR0A & ( 1 << UDRE0 ) ) == 0) {}
     UDR0 = ch;
 
-    hal_usart_txe_is_on = 1;
     // Set Data Register Empty Interrupt Enable, will trigger hal_uart_interrupt() when buffer is ready.
     UCSR0B |= (1<<UDRIE0);
 }

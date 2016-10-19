@@ -25,11 +25,6 @@ ISR(SPI_STC_vect){
 void hal_spi_init(void) {
   /* Enable SPI, Master, set clock rate fck/16 */
   SPCR = (1<<SPE)|(1<<MSTR)|(1<<SPR0);
-  
-}
-
-
-void hal_spi_dma_xfer(uint8_t *buffer, uint8_t len) {
 }
 
 uint8_t hal_spi_tx(uint8_t address) {
@@ -48,9 +43,5 @@ uint8_t hal_spi_tx(uint8_t address) {
 
 uint8_t hal_spi_rx(void) {
   return hal_spi_tx(0xff);
-}
-
-uint8_t hal_spi_read_address(uint8_t address) {
-  return 0;
 }
 

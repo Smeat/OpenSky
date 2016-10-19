@@ -82,7 +82,7 @@ ISR(TIMER0_COMPA_vect){
 
     // Disable interrupt.
     if (timer_1 == 0) {
-      debug("timeout1\n");
+      //debug("timeout1\n");
       TIMSK0 &= ~(1 << OCIE2A);
     }
 
@@ -104,14 +104,14 @@ ISR(TIMER2_COMPA_vect){
 
     // Disable interrupt.
     if (timer_1 == 0) {
-      debug("timeout1\n");
+      //debug("timeout2\n");
       TIMSK0 &= ~(1 << OCIE2A);
     }
 }
 
 
 void hal_timeout_set(__IO uint32_t ms) {
-    debug("timeout1 set "); debug_put_hex32(ms); debug_put_newline();
+    //debug("timeout1 set "); debug_put_hex32(ms); debug_put_newline();
     //disable OVF interrupts:
     TIMSK0 &= ~(1 << OCIE2A);
 
@@ -136,7 +136,7 @@ void hal_timeout_set(__IO uint32_t ms) {
 }
 
 void hal_timeout2_set(__IO uint32_t ms) {
-    debug("timeout2 set "); debug_put_uint8(ms); debug_put_newline();
+    //debug("timeout2 set "); debug_put_uint8(ms); debug_put_newline();
 
     //disable OVF interrupts:
     TIMSK2 &= ~(1 << OCIE2A);
