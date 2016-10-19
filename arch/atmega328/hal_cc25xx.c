@@ -91,24 +91,25 @@ inline uint8_t hal_cc25xx_get_status(void) {
 
 uint8_t hal_cc25xx_transmission_completed(void) {
     //after tx cc25xx goes back to RX (configured by mcsm1 register)
-    //return ((hal_cc25xx_get_status() & (0x70)) == CC2500_STATUS_STATE_RX);
-    return 1;
+    return ((hal_cc25xx_get_status() & (0x70)) == CC2500_STATUS_STATE_RX);
 }
 
 inline void hal_cc25xx_enter_rxmode(void) {
     //add pa/lna config bit setting here
-    //CC25XX_LNA_SW_CRX_GPIO->BSRR = (CC25XX_LNA_SW_CRX_PIN); //1
+    debug("RX\n");
+    hal_io_enable_pa(0);
     delay_us(20);
-    //CC25XX_LNA_SW_CTX_GPIO->BRR  = (CC25XX_LNA_SW_CTX_PIN); //0
+    hal_io_enable_lna(1);
     delay_us(5);
 
 }
 
 inline void hal_cc25xx_enter_txmode(void) {
     //add pa/lna config bit setting here
-    //CC25XX_LNA_SW_CRX_GPIO->BRR  = (CC25XX_LNA_SW_CRX_PIN); //0
+    debug("TX\n");
+    hal_io_enable_lna(0);
     delay_us(20);
-    //CC25XX_LNA_SW_CTX_GPIO->BSRR = (CC25XX_LNA_SW_CTX_PIN); //1
+    hal_io_enable_pa(1);
     delay_us(5);
 }
 

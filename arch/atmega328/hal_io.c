@@ -15,6 +15,7 @@
    author: fishpepper <AT> gmail.com, jimmyw <AT> github
 */
 
+#include <stdint.h>
 #include "hal_io.h"
 #include "config.h"
 #include <avr/io.h>
@@ -28,9 +29,13 @@
 #define DD_GDO D9
 #define DD_SS D10
 
+#define PA_EN D6
+#define LNA_EN D7
+
 void hal_io_init(void) {
   /* Set MOSI and SCK output, all others input */
   DDRB = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
+  DDRD = (1<<PA_EN)|(1<<LNA_EN);
   
   /* PUT SS HI */
   hal_io_csn_hi();
@@ -44,6 +49,20 @@ void hal_io_init(void) {
     delay_ms(100);
   }
   */
+}
+
+void hal_io_enable_pa(uint8_t enable) {
+  if (enable)
+    PORTD |= 1 << PA_EN;
+  else
+    PORTD &= ~ 1 << PA_EN;
+}
+
+void hal_io_enable_lna(uint8_t enable) {
+  if (enable)
+    PORTD |= 1 << LNA_EN;
+  else
+    PORTD &= ~ 1 << LNA_EN;
 }
 
 void hal_io_csn_lo() {
