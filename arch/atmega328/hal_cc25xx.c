@@ -68,7 +68,10 @@ inline uint8_t hal_cc25xx_get_register(uint8_t address){
 
     //fetch result:
     result = hal_spi_rx();
-    debug("hal_cc25xx_get_register: 0x"); debug_put_hex8(address); debug(" got: 0x"); debug_put_hex8(result); debug("\n"); debug_flush();
+    debug("hal_cc25xx_get_register: 0x"); debug_put_hex8(address & ~(READ_FLAG | BURST_FLAG));
+    if (address & READ_FLAG) debug(" READ");
+    if (address & BURST_FLAG) debug(" BURST");
+    debug(" got: 0x"); debug_put_hex8(result); debug("\n"); debug_flush();
 
     //deselect device
     hal_io_csn_hi();
@@ -131,7 +134,9 @@ inline void hal_cc25xx_register_read_multi(uint8_t address, uint8_t *buffer, uin
     hal_io_csn_lo();
 
     // wait for ready signal
+    debug("WAIT MISO LOW\n");
     hal_io_wait_miso_low();
+    debug("MISO LOW\n");
 
     // request address (read request)
     uint8_t status = hal_spi_tx(address);
@@ -147,7 +152,7 @@ inline void hal_cc25xx_register_read_multi(uint8_t address, uint8_t *buffer, uin
         buffer++;
     }
 
-#if DEBUG_PRINT_READ
+//#if DEBUG_PRINT_READ
     if (len2 > 0) {
       debug("read data len: ");
       debug_put_uint8(len2);
@@ -162,7 +167,7 @@ inline void hal_cc25xx_register_read_multi(uint8_t address, uint8_t *buffer, uin
       debug("\n");
       debug_flush();
     }
-#endif
+//#endif
 
     // deselect device
     hal_io_csn_hi();
@@ -209,6 +214,13 @@ inline void hal_cc25xx_process_packet(volatile uint8_t *packet_received, volatil
             len2 = hal_cc25xx_get_register_burst(RXBYTES) & 0x7F;
             if (len1==len2) break;
         }
+        debug("Got len1: ");
+        debug_put_hex8(len1);
+        debug(" len2: ");
+        debug_put_hex8(len2);
+        debug(" maxlen: ");
+        debug_put_hex8(maxlen);
+        debug("\n");
 
         //valid len found?
         if (len1==len2){
@@ -225,10 +237,14 @@ inline void hal_cc25xx_process_packet(volatile uint8_t *packet_received, volatil
                     buffer[i] = tmp_buffer[i];
                 }
                 *packet_received = 1;
+                debug("PACKET_RECEIVED\n");
+            } else {
+                debug("INCOMPLETE_PACKET\n");
             }
         }else{
             //no, ignore this
             len = 0;
+            debug("IGNORED\n");
         }
     }
 }

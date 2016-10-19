@@ -10,8 +10,8 @@ void hal_uart_init(void);
 void hal_uart_start_transmission(uint8_t ch);
 void hal_uart_tx_data(uint8_t ch);
 
-#define hal_uart_int_enable()  { }
-#define hal_uart_int_disable()  { }
+#define hal_uart_int_enable()  { sei(); }
+#define hal_uart_int_disable()  { cli(); }
 
 uint8_t hal_uart_int_enabled(void);
 void hal_uart_interrupt(void);
