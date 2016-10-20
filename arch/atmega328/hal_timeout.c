@@ -39,13 +39,21 @@ static uint32_t timer_2 = 0;
 
 void hal_timeout_init(void) {
 
-    //CTC mode
-    TCCR0A = (1<<WGM21);
+    // setup timer1 to use timer 0
+    TCCR0A = (1<<WGM21); // CTC mode
     TCCR0B  = (0 << CS22) | (1 << CS21) | (1 << CS20); // Clock / 32
 
     //set up overflow every 1.0ms.
     OCR0A   = F_CPU/32L/1000L/2L;
     hal_timeout_set(0);
+
+    // setup timer2 to use timer 2
+    TCCR2A = (1<<WGM21); // CTC mode
+    TCCR2B  = (0 << CS22) | (1 << CS21) | (1 << CS20); // Clock / 32
+
+    //set up overflow every 100us.
+    OCR2A   = F_CPU/32L/10000L/2L;
+    hal_timeout2_set_100us(0);
 
 #ifdef TEST
     debug("timer test\n");
@@ -135,7 +143,7 @@ void hal_timeout_set(__IO uint32_t ms) {
     TIMSK0 |= (1 << OCIE2A);
 }
 
-void hal_timeout2_set(__IO uint32_t ms) {
+void hal_timeout2_set_100us(__IO uint32_t ms) {
     //debug("timeout2 set "); debug_put_uint8(ms); debug_put_newline();
 
     //disable OVF interrupts:
