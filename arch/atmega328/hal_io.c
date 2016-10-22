@@ -30,15 +30,16 @@
 #define DD_GDO D9
 #define DD_SS D10
 
-#define BIND D4
-#define DEBUG_PIN D5
+#define BIND D3
+#define DEBUG_PIN D4
+#define DEBUG2_PIN D5
 #define PA_EN D6
 #define LNA_EN D7
 
 void hal_io_init(void) {
   /* Set MOSI and SCK output, all others input */
   DDRB = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
-  DDRD = (1<<PA_EN)|(1<<LNA_EN)|(1<<DEBUG_PIN);
+  DDRD = (1<<PA_EN)|(1<<LNA_EN)|(1<<DEBUG_PIN)|(1<<DEBUG2_PIN);
   
   /* PUT SS HI */
   hal_io_csn_hi();
@@ -75,6 +76,12 @@ void hal_io_debug(uint8_t enable) {
     PORTD &= ~ 1 << DEBUG_PIN;
 }
 
+void hal_io_debug2(uint8_t enable) {
+  if (enable)
+    PORTD |= 1 << DEBUG2_PIN;
+  else
+    PORTD &= ~ 1 << DEBUG2_PIN;
+}
 
 void hal_io_csn_lo() {
   PORTB &= ~ 1 << DDB2;
