@@ -96,5 +96,7 @@ ALL_DEPS := $(patsubst %.c,%.d,$(BOARD_SRCS))
 clean:
 	rm -f *.o *.d *.elf *.hex *.eep
 
+ctags:
+	ctags *.c *.h arch/atmega328/*.c arch/atmega328/*.h board/atmega328/*.h
 
 .PHONY: board clean flash debug
