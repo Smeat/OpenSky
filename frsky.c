@@ -434,7 +434,7 @@ void frsky_tune_channel(uint8_t ch){
     cc25xx_strobe(RFST_SIDLE);
 
     //set channel number
-    debug("Tuning channel: "); debug_put_uint8(ch); debug_put_newline();
+    //debug("Tuning channel: "); debug_put_uint8(ch); debug_put_newline();
     cc25xx_set_register(CHANNR, ch);
 
     //start Self calib:
@@ -444,6 +444,7 @@ void frsky_tune_channel(uint8_t ch){
     //either delay_us(800) or check MARCSTATE:
     while(cc25xx_get_register(MARCSTATE) != 0x01);
 
+    //debug("Tuned\n");
     //now FSCAL3..1 shold be set up correctly! yay!
 }
 
@@ -873,7 +874,7 @@ void frsky_set_channel(uint8_t hop_index){
     cc25xx_set_register(FSCAL1, frsky_calib_fscal1_table[hop_index]);
 
     //set channel
-    debug("Tuning channel: "); debug_put_uint8(ch); debug_put_newline();
+    //debug("Set channel: "); debug_put_uint8(ch); debug_put_newline();
     cc25xx_set_register(CHANNR, ch);
 }
 
