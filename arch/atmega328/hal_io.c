@@ -59,32 +59,32 @@ void hal_io_enable_pa(uint8_t enable) {
   if (enable)
     PORTD |= 1 << PA_EN;
   else
-    PORTD &= ~ 1 << PA_EN;
+    PORTD &= ~ (1 << PA_EN);
 }
 
 void hal_io_enable_lna(uint8_t enable) {
   if (enable)
     PORTD |= 1 << LNA_EN;
   else
-    PORTD &= ~ 1 << LNA_EN;
+    PORTD &= ~ (1 << LNA_EN);
 }
 
 void hal_io_debug(uint8_t enable) {
   if (enable)
     PORTD |= 1 << DEBUG_PIN;
   else
-    PORTD &= ~ 1 << DEBUG_PIN;
+    PORTD &= ~ (1 << DEBUG_PIN);
 }
 
 void hal_io_debug2(uint8_t enable) {
   if (enable)
     PORTD |= 1 << DEBUG2_PIN;
   else
-    PORTD &= ~ 1 << DEBUG2_PIN;
+    PORTD &= ~ (1 << DEBUG2_PIN);
 }
 
 void hal_io_csn_lo() {
-  PORTB &= ~ 1 << DDB2;
+  PORTB &= ~ (1 << DDB2);
 }
 
 void hal_io_csn_hi() {
