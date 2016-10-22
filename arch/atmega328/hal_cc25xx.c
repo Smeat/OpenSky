@@ -149,7 +149,6 @@ inline void hal_cc25xx_register_read_multi(uint8_t address, uint8_t *buffer, uin
     uint8_t len2 = len;
     uint8_t *buffer2 = buffer;
 
-    // TODO hal_spi_dma_xfer(buffer, len);
     while(len--){
         *buffer = hal_spi_rx();
         buffer++;
@@ -189,7 +188,6 @@ inline void hal_cc25xx_register_write_multi(uint8_t address, uint8_t *buffer, ui
     hal_spi_tx(address | BURST_FLAG);
 
     // send array
-    // TODO hal_spi_dma_xfer(buffer, len);
     while(len--){
         hal_spi_tx(*buffer);
         buffer++;
