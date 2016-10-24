@@ -27,9 +27,10 @@
 #define DD_MISO MISO
 #define DD_SCK  SCK
 
-#define DD_GDO D9
+#define DD_GDO D2
 #define DD_SS D10
 
+#define PPM D9
 #define BIND D3
 #define DEBUG_PIN D4
 #define DEBUG2_PIN D5
@@ -38,7 +39,7 @@
 
 void hal_io_init(void) {
   /* Set MOSI and SCK output, all others input */
-  DDRB = (1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
+  DDRB = (1<<PPM)|(1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
   DDRD = (1<<PA_EN)|(1<<LNA_EN)|(1<<DEBUG_PIN)|(1<<DEBUG2_PIN);
   
   /* PUT SS HI */
@@ -53,6 +54,13 @@ void hal_io_init(void) {
     delay_ms(100);
   }
   */
+}
+
+void hal_io_set_ppm(uint8_t enable) {
+  if (enable)
+    PORTB |= 1 << PPM;
+  else
+    PORTB &= ~ (1 << PPM);
 }
 
 void hal_io_enable_pa(uint8_t enable) {
@@ -97,7 +105,7 @@ void hal_io_wait_miso_low() {
 }
 
 uint8_t hal_io_get_gdo() {
-  return (PINB & 1 << DD_GDO) != 0;
+  return (PIND & 1 << DD_GDO) != 0;
 }
 
 uint8_t hal_io_bind_request(void) {
