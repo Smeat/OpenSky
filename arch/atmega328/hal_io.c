@@ -92,11 +92,11 @@ void hal_io_debug2(uint8_t enable) {
 }
 
 void hal_io_csn_lo() {
-  PORTB &= ~ (1 << DDB2);
+  PORTB &= ~ (1 << DD_SS);
 }
 
 void hal_io_csn_hi() {
-  PORTB |= 1 << DDB2;
+  PORTB |= 1 << DD_SS;
 }
 
 void hal_io_wait_miso_low() {
