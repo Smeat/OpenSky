@@ -204,7 +204,7 @@ inline void hal_cc25xx_process_packet(volatile uint8_t *packet_received, volatil
         //timeout_set_100us(5);
 
         *packet_received = 0;
-        hal_io_debug(1);
+        //hal_io_debug(1);
 
         //there is a bug in the cc2500
         //see p3 http://www.ti.com/lit/er/swrz002e/swrz002e.pdf
@@ -251,7 +251,7 @@ inline void hal_cc25xx_process_packet(volatile uint8_t *packet_received, volatil
             len = 0;
             //debug("IGNORED\n");
         }
-        hal_io_debug(0);
+        //hal_io_debug(0);
     } else {
         //debug("NO GDO\n");
     }

@@ -15,3 +15,76 @@
    author: fishpepper <AT> gmail.com, jimmyw <AT> github
 */
 
+#include <stdint.h>
+
+#include "hal_ppm.h"
+#include "hal_io.h"
+#include "ppm.h"
+#include <avr/io.h>
+#include <avr/interrupt.h>
+
+/*
+ * CS12 CS11 CS10 Description
+ * 0    0    0    No clock source (Timer/Counter stopped).
+ * 0         1    clkI/O/1
+ * 0    1    0    clkI/O/8
+ * 0    1    1    clkI/O/64
+ * 1    0    0    clkI/O/256
+ * 1    0    1    clkI/O/1024
+ */
+
+void hal_ppm_init(void) {
+  cli(); // Disable interrupts
+	//initialise timer 1:
+	//we use COMPA and COMPB
+	//COMPA triggers the io pin level change
+	//COMPB triggers an interrupt and reloads the data whereas
+  // Set timer to Mode 15, Fast PWM,  TOP: OCR1A, OCR1x at BOTTOM, TOV1 flag on TOP
+	TCCR1A = (1<<COM1A1) | (1<<COM1A0) | (1<<WGM11) | (1<<WGM10);
+	TCCR1B = (1<<WGM13) | (1<<WGM12) | (0<<CS12) | (1<<CS11) | (1<<CS10);
+
+	//default during reset is 1ms
+	OCR1A = ((((F_CPU/1000) * 1000)/1000)/64);
+
+	//interrupt for timer value reload is triggered after sync pulse
+	OCR1B = ((((F_CPU/1000) * PPM_SYNC_DURATION_US)/1000)/64);
+
+	//enable interrupts:
+  // MASK
+	TIMSK1 |= (1<<OCIE1B);
+  // FLAG
+	TIFR1  |= (1<<OCIE1B) |(1<<TOIE1);  // TOIE1 - Enable overflow
+  // Counter
+	TCNT1 = 0;
+  sei(); // Enable interrupts again
+}
+
+void hal_ppm_update_ccvalue(uint16_t len) {
+  //OCR1A = len;
+}
+
+ISR(TIMER1_CAPT_vect){
+}
+
+ISR(TIMER1_COMPA_vect){
+}
+
+ISR(TIMER1_COMPB_vect){
+	hal_io_debug(0);
+	hal_io_debug(1);
+  //ppm_timer_isr();
+}
+
+
+ISR(TIMER1_OVF_vect){
+	hal_io_debug2(0);
+	hal_io_debug2(1);
+}
+
+void hal_ppm_failsafe_exit(void) {
+}
+
+void hal_ppm_failsafe_enter(void) {
+}
+
+
