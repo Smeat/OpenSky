@@ -40,45 +40,53 @@ void hal_ppm_init(void) {
 	//COMPA triggers the io pin level change
 	//COMPB triggers an interrupt and reloads the data whereas
   // Set timer to Mode 15, Fast PWM,  TOP: OCR1A, OCR1x at BOTTOM, TOV1 flag on TOP
-	TCCR1A = (1<<COM1A1) | (1<<COM1A0) | (1<<WGM11) | (1<<WGM10);
+	TCCR1A = (0<<COM1A1) | (0<<COM1A0) | (0<<COM1B1) | (0<<COM1B0) | (0<<FOC1A) | (0<<FOC1B) | (1<<WGM11) | (1<<WGM10);
 	TCCR1B = (1<<WGM13) | (1<<WGM12) | (0<<CS12) | (1<<CS11) | (1<<CS10);
 
+  // Configure TIMER1
+
 	//default during reset is 1ms
-	OCR1A = ((((F_CPU/1000) * 1000)/1000)/64);
+	OCR1A = HAL_PPM_US_TO_TICKCOUNT(1000);
 
 	//interrupt for timer value reload is triggered after sync pulse
-	OCR1B = ((((F_CPU/1000) * PPM_SYNC_DURATION_US)/1000)/64);
+	OCR1B = HAL_PPM_US_TO_TICKCOUNT(PPM_SYNC_DURATION_US);
 
 	//enable interrupts:
   // MASK
-	TIMSK1 |= (1<<OCIE1B);
-  // FLAG
-	TIFR1  |= (1<<OCIE1B) |(1<<TOIE1);  // TOIE1 - Enable overflow
+	TIMSK1 = (1<<OCIE1B) | (1<<OCIE1A);
+
   // Counter
 	TCNT1 = 0;
+  PORTB &= ~ (1 << D9);
   sei(); // Enable interrupts again
 }
 
-void hal_ppm_update_ccvalue(uint16_t len) {
-  //OCR1A = len;
+void hal_ppm_update_ccvalue(uint16_t tickcount) {
+	OCR1A = tickcount;
 }
 
 ISR(TIMER1_CAPT_vect){
 }
 
 ISR(TIMER1_COMPA_vect){
+#if (PPM_OUT_INVERTED)
+  PORTB &= ~ (1 << D9);
+#else
+  PORTB |= 1 << D9;
+#endif
 }
 
 ISR(TIMER1_COMPB_vect){
-	hal_io_debug(0);
-	hal_io_debug(1);
-  //ppm_timer_isr();
+#if (PPM_OUT_INVERTED)
+  PORTB |= 1 << D9;
+#else
+  PORTB &= ~ (1 << D9);
+#endif
+  ppm_timer_isr();
 }
 
 
 ISR(TIMER1_OVF_vect){
-	hal_io_debug2(0);
-	hal_io_debug2(1);
 }
 
 void hal_ppm_failsafe_exit(void) {
