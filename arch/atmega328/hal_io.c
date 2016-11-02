@@ -23,25 +23,20 @@
 #include <avr/interrupt.h>
 
 
-#define DD_MOSI MOSI
-#define DD_MISO MISO
-#define DD_SCK  SCK
-
-#define DD_GDO D2
-#define DD_SS D10
-
-#define PPM D9
-#define BIND D3
-#define DEBUG_PIN D4
-#define DEBUG2_PIN D5
-#define PA_EN D6
-#define LNA_EN D7
-
 void hal_io_init(void) {
   /* Set MOSI and SCK output, all others input */
-  DDRB = (1<<PPM)|(1<<DD_MOSI)|(1<<DD_SCK)|(1<<DD_SS)|(1<<0);
-  DDRD = (1<<PA_EN)|(1<<LNA_EN)|(1<<DEBUG_PIN)|(1<<DEBUG2_PIN);
-  
+  DDRB = 0;
+  DDRC = 0;
+  DDRD = 0;
+  PPM_PORT |= (1<<PPM_PIN);
+  DD_MOSI_PORT |= (1<<DD_MOSI_PIN);
+  DD_SCK_PORT |= (1<<DD_SCK_PIN);
+  DD_SS_PORT |= (1<<DD_SS_PIN);
+  PA_EN_PORT |= (1<<PA_EN_PIN);
+  LNA_EN_PORT |= (1<<LNA_EN_PIN);
+  DEBUG_PORT |= (1<<DEBUG_PIN);
+  DEBUG2_PORT |= (1<<DEBUG2_PIN);
+
   /* PUT SS HI */
   hal_io_csn_hi();
 
@@ -58,57 +53,57 @@ void hal_io_init(void) {
 
 void hal_io_set_ppm(uint8_t enable) {
   if (enable)
-    PORTB |= 1 << PPM;
+    PPM_PORT |= 1 << PPM_PIN;
   else
-    PORTB &= ~ (1 << PPM);
+    PPM_PORT &= ~ (1 << PPM_PIN);
 }
 
 void hal_io_enable_pa(uint8_t enable) {
   if (enable)
-    PORTD |= 1 << PA_EN;
+    PA_EN_PORT |= 1 << PA_EN_PIN;
   else
-    PORTD &= ~ (1 << PA_EN);
+    PA_EN_PORT &= ~ (1 << PA_EN_PIN);
 }
 
 void hal_io_enable_lna(uint8_t enable) {
   if (enable)
-    PORTD |= 1 << LNA_EN;
+    LNA_EN_PORT |= 1 << LNA_EN_PIN;
   else
-    PORTD &= ~ (1 << LNA_EN);
+    LNA_EN_PORT &= ~ (1 << LNA_EN_PIN);
 }
 
 void hal_io_debug(uint8_t enable) {
   if (enable)
-    PORTD |= 1 << DEBUG_PIN;
+    DEBUG_PORT |= 1 << DEBUG_PIN;
   else
-    PORTD &= ~ (1 << DEBUG_PIN);
+    DEBUG_PORT &= ~ (1 << DEBUG_PIN);
 }
 
 void hal_io_debug2(uint8_t enable) {
   if (enable)
-    PORTD |= 1 << DEBUG2_PIN;
+    DEBUG2_PORT |= 1 << DEBUG2_PIN;
   else
-    PORTD &= ~ (1 << DEBUG2_PIN);
+    DEBUG2_PORT &= ~ (1 << DEBUG2_PIN);
 }
 
 void hal_io_csn_lo() {
-  PORTB &= ~ (1 << DD_SS);
+  DD_SS_PORT &= ~ (1 << DD_SS_PIN);
 }
 
 void hal_io_csn_hi() {
-  PORTB |= 1 << DD_SS;
+  DD_SS_PORT |= 1 << DD_SS_PIN;
 }
 
 void hal_io_wait_miso_low() {
-  while((PINB & 1 << DD_MISO) != 0){ /*debug("H");*/}
+  while((DD_MISO_INP & 1 << DD_MISO_PIN) != 0){ /*debug("H");*/}
   /*debug("L");*/
 }
 
 uint8_t hal_io_get_gdo() {
-  return (PIND & 1 << DD_GDO) != 0;
+  return (DD_GDO_INP & 1 << DD_GDO_PIN) != 0;
 }
 
 uint8_t hal_io_bind_request(void) {
-  return (PIND & 1 << BIND) != 0;
+  return (BIND_INP & 1 << BIND_PIN) != 0;
 }
 

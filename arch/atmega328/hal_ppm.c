@@ -57,7 +57,7 @@ void hal_ppm_init(void) {
 
   // Counter
 	TCNT1 = 0;
-  PORTB &= ~ (1 << D9);
+  PPM_PORT &= ~ (1 << PPM_PIN);
   sei(); // Enable interrupts again
 }
 
@@ -70,17 +70,17 @@ ISR(TIMER1_CAPT_vect){
 
 ISR(TIMER1_COMPA_vect){
 #if (PPM_OUT_INVERTED)
-  PORTB &= ~ (1 << D9);
+  PPM_PORT &= ~ (1 << PPM_PIN);
 #else
-  PORTB |= 1 << D9;
+  PPM_PORT |= 1 << PPM_PIN;
 #endif
 }
 
 ISR(TIMER1_COMPB_vect){
 #if (PPM_OUT_INVERTED)
-  PORTB |= 1 << D9;
+  PPM_PORT |= 1 << PPM_PIN;
 #else
-  PORTB &= ~ (1 << D9);
+  PPM_PORT &= ~ (1 << PPM_PIN);
 #endif
   ppm_timer_isr();
 }
