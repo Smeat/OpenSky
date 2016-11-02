@@ -15,6 +15,8 @@
    author: fishpepper <AT> gmail.com, jimmyw <AT> github
 */
 
+#define USART_BAUDRATE 115200
+
 /* Map arduino pin names to atmega ports */
 
 #define A0_PIN      DDC0

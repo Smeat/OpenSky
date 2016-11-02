@@ -18,8 +18,8 @@
 #include "hal_uart.h"
 #include <avr/io.h>
 #include <avr/interrupt.h>
+#include "config.h"
 
-#define USART_BAUDRATE 115200
 #define BAUD_PRESCALE (F_CPU / 4 / USART_BAUDRATE - 1) / 2
 
 // &UBRRH, &UBRRL, &UCSRA, &UCSRB, &UCSRC, &UDR
