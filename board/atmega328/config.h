@@ -106,3 +106,5 @@
 #define LNA_EN_PIN D7_PIN
 #define LNA_EN_PORT D7_PORT
 
+
+#define DEFAULT_FSCAL_VALUE 0

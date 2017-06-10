@@ -1,5 +1,5 @@
 #select target. supported: {VD5M, D4RII, USKY, TINYFISH, AFRX, RASP, ATMEGA328}
-TARGET ?= USKY
+TARGET ?= ATMEGA328
 
 ASFLAGS       = -g
 ROOT         := $(patsubst %/,%,$(dir $(lastword $(MAKEFILE_LIST))))

@@ -72,35 +72,35 @@ void hal_timeout_init(void) {
 
 #ifdef TEST1
     debug("timer test_1\n");
-    DDRD = (1<<D4) | (1<<D5);
+    DDRD = (1<<PD4) | (1<<PD5);
     while(1){
         hal_timeout_set(1); // 1ms
-        PORTD &= ~ (1 << D4);
+        PORTD &= ~ (1 << PD4);
         while(timer_1 > 0){
         }
-        PORTD |= (1 << D4);
+        PORTD |= (1 << PD4);
         hal_timeout_set(10); // 10ms
-        PORTD &= ~ (1 << D4);
+        PORTD &= ~ (1 << PD4);
         while(timer_1 > 0){
         }
-        PORTD |= (1 << D4);
+        PORTD |= (1 << PD4);
     }
 #endif
 #ifdef TEST2
     debug("timer test_2\n");
-    DDRD = (1<<D4) | (1<<D5);
+    DDRD = (1<<PD4) | (1<<PD5);
     sei();
     while(1){
         hal_timeout2_set_100us(10); // 1ms
-        PORTD &= ~ (1 << D4);
+        PORTD &= ~ (1 << PD4);
         while(timer_2 > 0){
         }
-        PORTD |= (1 << D4);
+        PORTD |= (1 << PD4);
         hal_timeout2_set_100us(100); // 10ms
-        PORTD &= ~ (1 << D4);
+        PORTD &= ~ (1 << PD4);
         while(timer_2 > 0){
         }
-        PORTD |= (1 << D4);
+        PORTD |= (1 << PD4);
     }
 #endif
 }
@@ -109,10 +109,10 @@ ISR(TIMER0_COMPA_vect){
 #ifdef TEST1
   static volatile int c = 0;
   if (c) {
-    PORTD &= ~ (1 << D5);
+    PORTD &= ~ (1 << PD5);
     c = 0;
   } else {
-    PORTD |= (1 << D5);
+    PORTD |= (1 << PD5);
     c = 1;
   }
 #endif
@@ -130,10 +130,10 @@ ISR(TIMER2_COMPA_vect){
 #ifdef TEST2
   static volatile int c = 0;
   if (c) {
-    PORTD &= ~ (1 << D5);
+    PORTD &= ~ (1 << PD5);
     c = 0;
   } else {
-    PORTD |= (1 << D5);
+    PORTD |= (1 << PD5);
     c = 1;
   }
 #endif
