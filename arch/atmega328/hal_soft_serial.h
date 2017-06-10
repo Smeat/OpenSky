@@ -22,4 +22,7 @@ void hal_soft_serial_init(void);
 
 #define HAL_SOFT_SERIAL_UPDATE_TOP_VALUE(x)   { }
 
+#define HUB_TELEMETRY_PIN_HI() (HUB_TELEMETRY_PORT & (1 << HUB_TELEMETRY_PIN))
+#define HUB_TELEMETRY_PIN_LO() (!HUB_TELEMETRY_PIN_HI())
+
 #endif // __HAL_SOFT_SERIAL_H__

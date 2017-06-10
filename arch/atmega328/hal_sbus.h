@@ -3,12 +3,13 @@
 #include <stdint.h>
 #include "hal_defines.h"
 
-void hal_sbus_init(EXTERNAL_MEMORY uint8_t *data_ptr);
-void hal_sbus_start_transmission(uint8_t *buffer, uint8_t len);
-
-void SBUS_USART_IRQHANDLER(void);
-
-//not used here
-#define HAL_SBUS_PREPARE_DATA(a) (a)
+// this helper routine will invert the data
+// stored in buffer in case the sbus is set
+// to inverted
+#ifdef SBUS_INVERTED
+  #define HAL_SBUS_PREPARE_DATA(a) (0xFF ^ (a))
+#else
+  #define HAL_SBUS_PREPARE_DATA(a) (a)
+#endif // SBUS_INVERTED
 
 #endif // __HAL_SBUS_H__

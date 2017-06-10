@@ -20,8 +20,6 @@ uint8_t hal_uart_isr_is_set();
 void hal_uart_isr_disable();
 void hal_uart_isr_clear_flag(void);
 
-
-#define DEBUG_ISR(void) hal_uart_interrupt(void)
 #define HAL_UART_ISR_FLAG_SET() hal_uart_isr_is_set()
 #define HAL_UART_ISR_CLEAR_FLAG() hal_uart_isr_clear_flag()
 #define HAL_UART_ISR_DISABLE() hal_uart_isr_disable()
