@@ -80,5 +80,3 @@ uint8_t hal_uart_int_enabled(void) {
     return hal_usart_txe_is_on;
 }
 
-void hal_uart_interrupt(void){}
-

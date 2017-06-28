@@ -28,12 +28,12 @@ void hal_debug_init(void);
 void hal_debug_start_transmission(uint8_t ch);
 
 
-#define hal_debug_int_enabled() (1)
+#define hal_debug_int_enabled() (0)
 
 #define hal_debug_int_enable() { sei(); }
 #define hal_debug_int_disable() { cli(); }
 
-#define DEBUG_ISR(void) DEBUG_USART_IRQHANDLER(void)
+#define DEBUG_ISR(void) hal_uart_interrupt(void)
 #define HAL_DEBUG_ISR_FLAG_SET() (1)
 #define HAL_DEBUG_ISR_CLEAR_FLAG() { }
 #define HAL_DEBUG_ISR_DISABLE() {}

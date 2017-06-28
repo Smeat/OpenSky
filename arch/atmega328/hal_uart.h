@@ -14,7 +14,6 @@ void hal_uart_tx_data(uint8_t ch);
 #define hal_uart_int_disable()  { cli(); }
 
 uint8_t hal_uart_int_enabled(void);
-void hal_uart_interrupt(void);
 uint8_t hal_uart_isr_is_set();
 
 void hal_uart_isr_disable();

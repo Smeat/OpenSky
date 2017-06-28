@@ -20,7 +20,13 @@
 #include "hal_debug.h"
 #include "hal_defines.h"
 
+#include "hal_uart.h"
 
-void hal_debug_init(void) {}
-void hal_debug_start_transmission(uint8_t ch) {}
+
+void hal_debug_init(void) {
+	hal_uart_init();
+}
+void hal_debug_start_transmission(uint8_t ch) {
+	hal_uart_start_transmission(ch);
+}
 
