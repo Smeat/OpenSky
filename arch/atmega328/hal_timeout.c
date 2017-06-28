@@ -70,7 +70,7 @@ void hal_timeout_init(void) {
 
     sei(); // Enable interrupts again
 
-#ifdef TEST1
+#ifdef AVR_TEST1
     debug("timer test_1\n");
     DDRD = (1<<PD4) | (1<<PD5);
     while(1){
@@ -86,7 +86,7 @@ void hal_timeout_init(void) {
         PORTD |= (1 << PD4);
     }
 #endif
-#ifdef TEST2
+#ifdef AVR_TEST2
     debug("timer test_2\n");
     DDRD = (1<<PD4) | (1<<PD5);
     sei();
@@ -106,7 +106,7 @@ void hal_timeout_init(void) {
 }
 
 ISR(TIMER0_COMPA_vect){
-#ifdef TEST1
+#ifdef AVR_TEST1
   static volatile int c = 0;
   if (c) {
     PORTD &= ~ (1 << PD5);
@@ -127,7 +127,7 @@ ISR(TIMER0_COMPA_vect){
 }
 
 ISR(TIMER2_COMPA_vect){
-#ifdef TEST2
+#ifdef AVR_TEST2
   static volatile int c = 0;
   if (c) {
     PORTD &= ~ (1 << PD5);
