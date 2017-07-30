@@ -33,7 +33,20 @@
 void hal_uart_init(void) {
     EXTERNAL_MEMORY union hal_uart_config_t sbus_uart_config;
 
-#if SBUS_UART == USART0_P1
+#if SBUS_UART == USART0_P0
+    // -> USART0_P0
+    //    use ALT1 -> clear flag -> P0_3 = TX / P0_2 = RX
+    PERCFG &= ~(PERCFG_U0CFG);
+
+    // configure pins as peripheral:
+    P0SEL |= (1<<3) | (1<<2);
+
+    // make sure all P1 pins switch to normal GPIO
+    //P1SEL &= ~(0xF0);
+
+    // make tx pin output:
+    P0DIR |= (1<<3);
+#elif SBUS_UART == USART0_P1
     // -> USART0_P1
     //    use ALT2 -> Set flag -> P1_5 = TX / P1_4 = RX
     PERCFG |= (PERCFG_U0CFG);
