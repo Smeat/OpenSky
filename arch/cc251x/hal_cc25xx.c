@@ -41,15 +41,20 @@ void hal_cc25xx_init(void) {
     // if we support LNA/PA make sure to config the pin as output:
     #ifdef RF_LNA_PORT
       PORT2DIR(RF_LNA_PORT) |= (1 << RF_LNA_PIN);
-      PORT2DIR(RF_PA_PORT)  |= (1 << RF_PA_PIN);
       // set default to LNA active
-      RF_PA_DISABLE();
       RF_LNA_ENABLE();
+      #ifdef RF_PA_PORT
+        PORT2DIR(RF_PA_PORT)  |= (1 << RF_PA_PIN);
+        RF_PA_DISABLE();
+      #endif
     #endif  // RF_LNA_PORT
 
     // if we support Diversity make sure to config the pin as output:
     #ifdef RF_ANTENNA_SWITCH_PORT
       PORT2DIR(RF_ANTENNA_SWITCH_PORT) |= (1 << RF_ANTENNA_SWITCH_PIN);
+    #ifdef RF_ANTENNA_SWITCH_PORT2
+      PORT2DIR(RF_ANTENNA_SWITCH_PORT2) |= (1 << RF_ANTENNA_SWITCH_PIN2);
+    #endif
       // select first antenna
       RF_ANTENNA_SELECT_A();
     #endif  // RF_ANTENNA_SWITCH_PORT
@@ -98,8 +103,10 @@ void hal_cc25xx_enter_rxmode(void) {
 #ifdef RF_LNA_PORT
     RF_LNA_ENABLE();
     delay_us(20);
-    RF_PA_DISABLE();
-    delay_us(5);
+    #ifdef RF_PA_PORT
+      RF_PA_DISABLE();
+      delay_us(5);
+    #endif
 #endif  // RF_LNA_PORT
 
     // set up dma for radio--->buffer
@@ -118,8 +125,10 @@ void hal_cc25xx_enter_txmode(void) {
 #ifdef RF_LNA_PORT
     RF_LNA_DISABLE();
     delay_us(20);
-    RF_PA_ENABLE();
-    delay_us(5);
+    #ifdef RF_PA_PORT
+      RF_PA_ENABLE();
+      delay_us(5);
+    #endif
 #endif  // RF_LNA_PORT
 
     // abort ch0

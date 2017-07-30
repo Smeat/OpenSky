@@ -849,7 +849,9 @@ void frsky_main(void) {
                     }
 
                    // build & send packet
-                   frsky_send_telemetry(requested_telemetry_id);
+                   #ifndef DISABLE_TELEMETRY
+                       frsky_send_telemetry(requested_telemetry_id);
+                   #endif
                 }
             }
         } else {
