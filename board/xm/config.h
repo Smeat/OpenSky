@@ -26,6 +26,10 @@
 #define LED_RED_PORT                P1
 #define LED_RED_PIN                 2
 
+#define BUFFER_ENABLE_PORT P1
+#define BUFFER_ENABLE_PIN 0
+
+
 // DEBUG
 #define DEBUG_UART 					USART1_P0 //Not accessible
 

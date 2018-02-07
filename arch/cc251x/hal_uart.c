@@ -30,8 +30,18 @@
 #include "delay.h"
 #include "led.h"
 
+#if defined(BUFFER_ENABLE_PIN) && defined(BUFFER_ENABLE_PORT)
+#define BUFFER_ENABLE_DIR PORT2DIR(BUFFER_ENABLE_PORT)
+#define BUFFER_ENABLE_BIT PORT2BIT(BUFFER_ENABLE_PORT, BUFFER_ENABLE_PIN)
+#endif
+
 void hal_uart_init(void) {
     EXTERNAL_MEMORY union hal_uart_config_t sbus_uart_config;
+
+#ifdef BUFFER_ENABLE_DIR
+	BUFFER_ENABLE_DIR |= (1 << BUFFER_ENABLE_PIN);
+	BUFFER_ENABLE_BIT = 1;
+#endif
 
 #if SBUS_UART == USART0_P0
     // -> USART0_P0
