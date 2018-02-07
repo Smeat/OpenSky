@@ -36,6 +36,9 @@
 // Note: This board has an inverter -> the output signal gets inverted again
 //#define SBUS_INVERTED
 
+#define BUFFER_ENABLE_PORT P1
+#define BUFFER_ENABLE_PIN 0
+
 // PPM (only used if sbus is disabled)
 // invert SBUS output (normal is non inverted)
 // #define PPM_INVERTED
