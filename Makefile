@@ -1,4 +1,4 @@
-#select target. supported: {VD5M, D4RII, USKY, TINYFISH, AFRX, V8FR, XM, XMP, RASP}
+#select target. supported: {VD5M, D4RII, USKY, TINYFISH, AFRX, XM, XMP, RASP}
 TARGET ?= USKY
 
 ASFLAGS       = -g
