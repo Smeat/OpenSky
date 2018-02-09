@@ -36,6 +36,7 @@
 // Note: This board has an inverter -> the output signal gets inverted again
 //#define SBUS_INVERTED
 
+//This board has a buffer gate after the inverter. Not sure what the purpose is though
 #define BUFFER_ENABLE_PORT P1
 #define BUFFER_ENABLE_PIN 0
 
@@ -61,12 +62,12 @@
 #define DISABLE_TELEMETRY
 
 // Antenna switch control pin
-#define RF_ANTENNA_SWITCH_PORT      P1
-#define RF_ANTENNA_SWITCH_PIN       1
+#define RF_ANTENNA_SWITCH_PORT      P0
+#define RF_ANTENNA_SWITCH_PIN       6
 #define RF_ANTENNA_A_LEVEL          1
 
-#define RF_ANTENNA_SWITCH_PORT2	    P1
-#define RF_ANTENNA_SWITCH_PIN2       0
+#define RF_ANTENNA_SWITCH_PORT2	    P0
+#define RF_ANTENNA_SWITCH_PIN2       7
 #define RF_ANTENNA_A_LEVEL2          1
 
 // bootloader config
