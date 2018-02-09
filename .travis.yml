@@ -7,6 +7,8 @@ env:
     - TARGET=TINYFISH
     - TARGET=AFRX
     - TARGET=RASP
+    - TARGET=XMP
+    - TARGET=XM
 
 addons:
   apt_packages:
